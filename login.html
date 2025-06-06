@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Max Agency e Express</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-box">
+    <h1>Max Agency e Express</h1>
+    <form onsubmit="return validarLogin()">
+      <input type="text" id="usuario" placeholder="Usuário"><br>
+      <input type="password" id="senha" placeholder="Senha"><br>
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <script>
+    function validarLogin() {
+      const usuario = document.getElementById("usuario").value;
+      const senha = document.getElementById("senha").value;
+
+      if (usuario === "" || senha === "") {
+        alert("Preencha todos os campos.");
+        return false;
+      }
+
+      // Redireciona para painel.html
+      window.location.href = "painel.html";
+      return false;
+    }
+  </script>
+</body>
+</html>
