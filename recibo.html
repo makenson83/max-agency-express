@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Recibo - Max Agency e Express</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 30px;
+    }
+
+    .recibo {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .linha {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .linha strong {
+      width: 40%;
+    }
+
+    .print {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .print button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="recibo">
+    <h2>Recibo de Operação</h2>
+
+    <div class="linha"><strong>Data:</strong> <span>06/06/2025</span></div>
+    <div class="linha"><strong>Hora:</strong> <span>19:00</span></div>
+    <div class="linha"><strong>Tipo:</strong> <span>Recarga</span></div>
+    <div class="linha"><strong>Operadora:</strong> <span>Digicel</span></div>
+    <div class="linha"><strong>Número:</strong> <span>+50912345678</span></div>
+    <div class="linha"><strong>Valor (R$):</strong> <span>30,00</span></div>
+    <div class="linha"><strong>Valor (HTG):</strong> <span>390 HTG</span></div>
+    <div class="linha"><strong>Status:</strong> <span>✅ Sucesso</span></div>
+
+    <div class="print">
+      <button onclick="window.print()">🖨️ Imprimir Recibo</button>
+    </div>
+  </div>
+</body>
+</html>
