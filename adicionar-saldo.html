@@ -79,42 +79,33 @@
 <body>
   <div class="container">
     <h1>Adicionar Saldo via Pix</h1>
-
     <label for="valor">Valor (R$)</label>
     <input type="number" id="valor" min="3" max="1000" placeholder="Ex: 50">
-
     <button onclick="gerarQRCode()">Gerar QR Code</button>
-
     <div class="qrcode" id="qrcode-area">
       <img id="qrcode-img" src="" alt="QR Code Pix">
       <p>Copie e pague o Pix para: <strong>maxagencyexpess83@gmail.com</strong><br>Valor: <span id="valor-pix">R$ 0,00</span></p>
       <button onclick="confirmarPagamento()">✅ Confirmar Pagamento</button>
-       <button onclick="window.location.href='index.html'">🔙 Voltar ao Início</button>
+      <button onclick="window.location.href='index.html'">🔙 Voltar ao Início</button>
     </div>
-
     <div class="sucesso" id="mensagem-sucesso">
       Pagamento confirmado! Saldo atualizado com sucesso. ✅
     </div>
   </div>
-
   <script>
     const chavePix = "maxagencyexpess83@gmail.com";
-
     function gerarQRCode() {
       const valor = parseFloat(document.getElementById('valor').value);
       if (isNaN(valor) || valor < 3 || valor > 1000) {
         alert("Informe um valor entre R$3 e R$1000");
         return;
       }
-
       const pixTexto = `Pagamento via Pix para maxagencyexpess83@gmail.com, valor R$ ` + valor.toFixed(2);
       const url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(pixTexto);
-
       document.getElementById('valor-pix').innerText = "R$ " + valor.toFixed(2);
       document.getElementById('qrcode-img').src = url;
       document.getElementById('qrcode-area').style.display = "block";
     }
-
     function confirmarPagamento() {
       document.getElementById('mensagem-sucesso').style.display = "block";
     }
