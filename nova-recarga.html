@@ -1,106 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Nova Recarga - Max Agency e Express</title>
+  <meta charset="UTF-8" />
+  <title>Recarga Digicel/Natcom</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      background-color: #ffc107;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .resultado {
-      margin-top: 15px;
-      padding: 10px;
-      background: #e3f2fd;
-      border-radius: 8px;
-      font-size: 16px;
-    }
+    body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; }
+    .mensagem { text-align: center; color: green; margin-top: 15px; display: none; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Nova Recarga</h1>
-
-    <label for="operadora">Operadora</label>
+    <h2>Recarga para Digicel ou Natcom</h2>
     <select id="operadora">
       <option value="Digicel">Digicel</option>
       <option value="Natcom">Natcom</option>
     </select>
-
-    <label for="numero">Número do Haiti</label>
-    <input type="text" id="numero" placeholder="+509...">
-
-    <label for="valor">Valor em Reais (R$)</label>
-    <input type="number" id="valor" min="3" max="1000" placeholder="Ex: 50">
-
-    <div class="resultado" id="conversao"></div>
-
-    <button onclick="calcularConversao()">Calcular e Enviar</button>
+    <input type="text" id="numero" placeholder="Número do Haiti (+509...)" />
+    <input type="number" id="valor" placeholder="Valor em R$ (3 a 1000)" />
+    <button onclick="fazerRecarga()">Fazer Recarga</button>
+    <div class="mensagem" id="msg">✅ Recarga registrada com sucesso!</div>
   </div>
-
   <script>
-    function calcularConversao() {
-      const valor = parseFloat(document.getElementById('valor').value);
-      const taxa = 13.00; // taxa fictícia do dia: 1 real = 13 gourdes
-
-      if (isNaN(valor) || valor < 3 || valor > 1000) {
-        alert('Digite um valor entre R$3 e R$1000');
+    function fazerRecarga() {
+      const operadora = document.getElementById("operadora").value;
+      const numero = document.getElementById("numero").value;
+      const valor = parseFloat(document.getElementById("valor").value);
+      const saldo = parseFloat(localStorage.getItem("saldo") || "0");
+      if (!numero.startsWith("+509") || valor < 3 || valor > 1000 || valor > saldo) {
+        alert("Dados inválidos ou saldo insuficiente.");
         return;
       }
-
-      const convertido = (valor * taxa).toFixed(2);
-      const operadora = document.getElementById('operadora').value;
-      const numero = document.getElementById('numero').value;
-
-      if (!numero.startsWith('+509') || numero.length < 10) {
-        alert('Digite um número válido do Haiti com +509');
-        return;
-      }
-
-      document.getElementById('conversao').innerHTML = `
-        Enviando <strong>${convertido} HTG</strong> para <strong>${numero}</strong> via <strong>${operadora}</strong>.
-      `;
+      const taxa = 19.5;
+      const gourdes = Math.floor(valor * taxa);
+      const novoSaldo = saldo - valor;
+      localStorage.setItem("saldo", novoSaldo.toFixed(2));
+      const historico = JSON.parse(localStorage.getItem("historico") || "[]");
+      historico.unshift({
+        tipo: "Recarga", operadora, numero, valor, gourdes,
+        data: new Date().toLocaleString(), status: "Sucesso"
+      });
+      localStorage.setItem("historico", JSON.stringify(historico));
+      document.getElementById("msg").style.display = "block";
     }
   </script>
 </body>
