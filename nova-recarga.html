@@ -1,48 +1,48 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Recarga Digicel/Natcom</title>
+  <meta charset="UTF-8">
+  <title>Nova Recarga</title>
   <style>
-    body { font-family: Arial; background: #f5f5f5; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; }
-    .mensagem { text-align: center; color: green; margin-top: 15px; display: none; }
+    body { font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
+    button { background-color: #4caf50; color: white; border: none; cursor: pointer; }
+    .resultado { background-color: #e0f7fa; padding: 10px; border-radius: 6px; display: none; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Recarga para Digicel ou Natcom</h2>
+    <h2>Recarga DIGICEL / Natcom</h2>
     <select id="operadora">
-      <option value="Digicel">Digicel</option>
-      <option value="Natcom">Natcom</option>
+      <option value="DIGICEL">DIGICEL</option>
+      <option value="NATCOM">NATCOM</option>
     </select>
-    <input type="text" id="numero" placeholder="Número do Haiti (+509...)" />
-    <input type="number" id="valor" placeholder="Valor em R$ (3 a 1000)" />
-    <button onclick="fazerRecarga()">Fazer Recarga</button>
-    <div class="mensagem" id="msg">✅ Recarga registrada com sucesso!</div>
+    <input type="text" id="numero" placeholder="Número do Haiti" />
+    <input type="number" id="valorReais" placeholder="Valor em reais (R$)" />
+    <button onclick="calcular()">🧮 Calcular HTG</button>
+    <div class="resultado" id="resultado"></div>
+    <button onclick="confirmar()">✅ Confirmar Recarga</button>
   </div>
+
   <script>
-    function fazerRecarga() {
-      const operadora = document.getElementById("operadora").value;
-      const numero = document.getElementById("numero").value;
-      const valor = parseFloat(document.getElementById("valor").value);
-      const saldo = parseFloat(localStorage.getItem("saldo") || "0");
-      if (!numero.startsWith("+509") || valor < 3 || valor > 1000 || valor > saldo) {
-        alert("Dados inválidos ou saldo insuficiente.");
+    const taxaDia = 20;
+
+    function calcular() {
+      const valor = parseFloat(document.getElementById('valorReais').value);
+      if (isNaN(valor) || valor < 3 || valor > 1000) {
+        alert("Digite um valor entre R$3 e R$1000");
         return;
       }
-      const taxa = 19.5;
-      const gourdes = Math.floor(valor * taxa);
-      const novoSaldo = saldo - valor;
-      localStorage.setItem("saldo", novoSaldo.toFixed(2));
-      const historico = JSON.parse(localStorage.getItem("historico") || "[]");
-      historico.unshift({
-        tipo: "Recarga", operadora, numero, valor, gourdes,
-        data: new Date().toLocaleString(), status: "Sucesso"
-      });
-      localStorage.setItem("historico", JSON.stringify(historico));
-      document.getElementById("msg").style.display = "block";
+      const convertido = valor * taxaDia;
+      const resultado = document.getElementById('resultado');
+      resultado.innerText = `R$ ${valor.toFixed(2)} → ${convertido.toFixed(0)} HTG (Taxa: ${taxaDia})`;
+      resultado.style.display = "block";
+    }
+
+    function confirmar() {
+      alert("Recarga confirmada! (simulado)");
     }
   </script>
 </body>
