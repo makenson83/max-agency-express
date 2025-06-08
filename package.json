@@ -1,11 +1,6 @@
 {
-  "name": "taxa-api",
+  "name": "max-agency-express",
   "version": "1.0.0",
-  "main": "api/taxa.js",
-  "scripts": {
-    "start": "node api/taxa.js"
-  },
-  "dependencies": {
-    "node-fetch": "^2.6.1"
-  }
+  "main": "taxa.js",
+  "type": "module"
 }
