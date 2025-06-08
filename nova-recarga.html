@@ -3,7 +3,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Nova Recarga</title>
+  <title>Nova Recarga (Taxa Online)</title>
   <style>
     body { font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 20px; }
     .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -27,18 +27,23 @@
   </div>
 
   <script>
-    const taxaDia = 20;
-
-    function calcular() {
+    async function calcular() {
       const valor = parseFloat(document.getElementById('valorReais').value);
       if (isNaN(valor) || valor < 3 || valor > 1000) {
         alert("Digite um valor entre R$3 e R$1000");
         return;
       }
-      const convertido = valor * taxaDia;
-      const resultado = document.getElementById('resultado');
-      resultado.innerText = `R$ ${valor.toFixed(2)} → ${convertido.toFixed(0)} HTG (Taxa: ${taxaDia})`;
-      resultado.style.display = "block";
+
+      try {
+        const res = await fetch("https://api.exchangerate.host/convert?from=BRL&to=HTG");
+        const data = await res.json();
+        const taxa = data.result;
+        const convertido = valor * taxa;
+        document.getElementById('resultado').innerText = `R$ ${valor.toFixed(2)} → ${convertido.toFixed(2)} HTG (Taxa: ${taxa.toFixed(2)})`;
+        document.getElementById('resultado').style.display = "block";
+      } catch (e) {
+        alert("Erro ao buscar taxa online.");
+      }
     }
 
     function confirmar() {
