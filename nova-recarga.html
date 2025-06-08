@@ -1,53 +1,31 @@
-
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Nova Recarga (Taxa Online)</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
-    button { background-color: #4caf50; color: white; border: none; cursor: pointer; }
-    .resultado { background-color: #e0f7fa; padding: 10px; border-radius: 6px; display: none; margin-top: 10px; }
-  </style>
-</head>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Recarga</title></head>
 <body>
-  <div class="container">
-    <h2>Recarga DIGICEL / Natcom</h2>
-    <select id="operadora">
-      <option value="DIGICEL">DIGICEL</option>
-      <option value="NATCOM">NATCOM</option>
-    </select>
-    <input type="text" id="numero" placeholder="Número do Haiti" />
-    <input type="number" id="valorReais" placeholder="Valor em reais (R$)" />
-    <button onclick="calcular()">🧮 Calcular HTG</button>
-    <div class="resultado" id="resultado"></div>
-    <button onclick="confirmar()">✅ Confirmar Recarga</button>
-  </div>
-
+  <h1>Recarga DIGICEL / Natcom</h1>
+  <select id="operadora">
+    <option value="DIGICEL">DIGICEL</option>
+    <option value="NATCOM">NATCOM</option>
+  </select><br>
+  <input id="numero" placeholder="Número do Haiti"><br>
+  <input id="valor" type="number" placeholder="Valor em reais"><br>
+  <button onclick="calcular()">🧮 Calcular HTG</button>
+  <button onclick="confirmar()">✅ Confirmar Recarga</button>
+  <p id="resultado"></p>
   <script>
     async function calcular() {
-      const valor = parseFloat(document.getElementById('valorReais').value);
-      if (isNaN(valor) || valor < 3 || valor > 1000) {
-        alert("Digite um valor entre R$3 e R$1000");
-        return;
-      }
-
+      const valor = parseFloat(document.getElementById('valor').value);
       try {
-        const res = await fetch("https://api.exchangerate.host/convert?from=BRL&to=HTG");
+        const res = await fetch('/api/taxa');
         const data = await res.json();
-        const taxa = data.result;
-        const convertido = valor * taxa;
-        document.getElementById('resultado').innerText = `R$ ${valor.toFixed(2)} → ${convertido.toFixed(2)} HTG (Taxa: ${taxa.toFixed(2)})`;
-        document.getElementById('resultado').style.display = "block";
+        const htg = (valor * data.taxa).toFixed(2);
+        document.getElementById('resultado').innerText = `Convertido: ${htg} HTG`;
       } catch (e) {
         alert("Erro ao buscar taxa online.");
       }
     }
-
     function confirmar() {
-      alert("Recarga confirmada! (simulado)");
+      alert("Recarga confirmada.");
     }
   </script>
 </body>

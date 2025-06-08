@@ -1,4 +1,10 @@
-
 {
-  "version": 2
+  "functions": {
+    "taxa.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/taxa", "destination": "/taxa.js" }
+  ]
 }

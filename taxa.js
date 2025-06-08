@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   try {
     const response = await fetch("https://api.exchangerate.host/latest?base=BRL&symbols=HTG");
