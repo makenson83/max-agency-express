@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/taxa.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/taxa", "dest": "api/taxa.js" }
+  ]
+}

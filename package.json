@@ -1,0 +1,11 @@
+{
+  "name": "taxa-api",
+  "version": "1.0.0",
+  "main": "api/taxa.js",
+  "scripts": {
+    "start": "node api/taxa.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
