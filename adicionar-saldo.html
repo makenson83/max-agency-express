@@ -1,1 +1,47 @@
-<!-- Página de adicionar saldo -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adicionar Saldo</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    .qrcode { display: none; text-align: center; }
+    .sucesso { display: none; color: green; text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Adicionar Saldo via Pix</h1>
+    <input type="number" id="valor" min="3" max="1000" placeholder="Digite o valor (R$)" />
+    <button onclick="gerarQRCode()">Gerar QR Code</button>
+    <div class="qrcode" id="qrcode-area">
+      <img id="qrcode-img" width="200" />
+      <p>Pix para: <strong>maxagencyexpess83@gmail.com</strong></p>
+      <button onclick="confirmarPagamento()">✅ Confirmar Pagamento</button>
+    </div>
+    <div class="sucesso" id="sucesso">✅ Pagamento confirmado! Saldo atualizado.</div>
+  </div>
+  <script>
+    function gerarQRCode() {
+      const valor = parseFloat(document.getElementById('valor').value);
+      if (isNaN(valor) || valor < 3 || valor > 1000) {
+        alert("Valor inválido. Mínimo R$3 e máximo R$1000.");
+        return;
+      }
+      const textoPix = `Pagamento Pix para maxagencyexpess83@gmail.com - R$ ${valor.toFixed(2)}`;
+      document.getElementById('qrcode-img').src = 'https://api.qrserver.com/v1/create-qr-code/?data=' + encodeURIComponent(textoPix) + '&size=200x200';
+      document.getElementById('qrcode-area').style.display = 'block';
+      localStorage.setItem('valor_temp', valor);
+    }
+
+    function confirmarPagamento() {
+      const atual = parseFloat(localStorage.getItem('saldo') || "0");
+      const valor = parseFloat(localStorage.getItem('valor_temp') || "0");
+      localStorage.setItem('saldo', (atual + valor).toFixed(2));
+      document.getElementById('sucesso').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
