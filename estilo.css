@@ -1,0 +1,24 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: sans-serif;
+}
+.tela-principal {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.botao {
+  display: inline-block;
+  margin: 10px;
+  padding: 15px 25px;
+  background-color: #facc15;
+  color: black;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}

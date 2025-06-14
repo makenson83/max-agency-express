@@ -1,0 +1,1 @@
+// Script para taxa de conversão (placeholder)
