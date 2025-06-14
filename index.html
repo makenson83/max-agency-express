@@ -8,6 +8,11 @@
   <link rel="stylesheet" href="estilo.css" />
 </head>
 <body>
+  <script>
+    if (localStorage.getItem("logado") !== "sim") {
+      window.location.href = "login.html";
+    }
+  </script>
   <div class="tela-principal">
     <h1>Max Agency Express</h1>
     <div class="botoes">
