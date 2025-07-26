@@ -1,35 +1,32 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Adicionar Saldo via Pix</title>
-  <meta charset="UTF-8" />
-</head>
-<body>
-  <h1>Adicionar Saldo via Pix</h1>
-  <input type="number" id="valor" placeholder="Valor mínimo R$3 e máximo R$3000" />
-  <button onclick="gerarPix()">Gerar Pix</button>
-  <div id="resultado"></div>
-
-  <script>
-    async function gerarPix() {
-      const valor = parseFloat(document.getElementById('valor').value);
-      const res = await fetch('http://localhost:3000/criar-pagamento', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ valor })
-      });
-
-      const dados = await res.json();
-      if (dados.qr_code) {
-        document.getElementById('resultado').innerHTML = `
-          <p><b>Código Pix:</b> ${dados.qr_code}</p>
-          <img src="data:image/png;base64,${dados.qr_code_base64}" width="200"/>
-        `;
-      } else {
-        document.getElementById('resultado').innerText = 'Erro: ' + dados.erro;
+<!DOCTYPE html >
+< html  lang =" pt-BR " >
+< cabeça >
+  < meta  charset =" UTF-8 " />
+  < title > Login - Max Agência e Express </ title >
+  < estilo >
+    corpo { família de fontes : Arial , sem serifa; plano de fundo :  # f8f8f8 ; exibição : flex; justificar conteúdo : centralizar; alinhar itens : centralizar; altura :  100 vh ; }
+    . caixa de login { fundo : branco; preenchimento :  40 px ; raio da borda :  10 px ; sombra da caixa :  0  0  10 px  rgba ( 0 , 0 , 0 , 0,1 ); alinhamento de texto : centralizado; }
+    entrada ,  botão { preenchimento :  10 px ; margem :  10 px  0 ; largura :  100 % ; raio da borda :  5 px ; }
+    botão { fundo :  # ffc107 ; borda : nenhuma; espessura da fonte : negrito; cursor : ponteiro; }
+  </ estilo >
+</head>​​
+< corpo >
+  < div  class =" caixa de login " >
+    < h2 > Max Agência e Express </ h2 >
+    < input  type =" text " id =" usuário " placeholder =" Usuário " />
+    < input  type =" senha " id =" senha " placeholder =" Senha " />
+    < button  onclick =" login() " > Entrar </ button >
+  </div>​​
+  < script >
+    função  login ( )  {
+      const  você  =  documento . getElementById ( 'usuário' ) . valor ;
+      const  s  =  documento . getElementById ( 'senha' ) . valor ;
+      se  ( u  ===  "admin"  &&  s  ===  "1234" )  {
+        janela . localização . href  =  "home.html" ;
+      }  outro  {
+        alert ( "Usuário ou senha incorreta." ) ;
       }
     }
-  </script>
-</body>
-</html>
+  </ script >
+</ corpo >
+</ html >
