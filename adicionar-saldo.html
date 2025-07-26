@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adicionar Saldo via Pix</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f8f8f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
+    input, button, textarea { padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; }
+    button { background: #ffc107; border: none; font-weight: bold; cursor: pointer; }
+    #pixResult { display: none; margin-top: 20px; }
+    #qrCodeImg { margin-top: 15px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Adicionar Saldo via Pix</h2>
+    <input type="number" id="valor" placeholder="Digite o valor (mínimo R$3)" min="3" />
+    <button onclick="gerarPix()">Gerar Pix</button>
+
+    <div id="pixResult">
+      <p style="color: red;">Copie e cole no app do seu banco:</p>
+      <textarea id="pixCode" rows="4" readonly></textarea>
+      <button onclick="copiarPix()">Copiar Código Pix</button>
+      <img id="qrCodeImg" alt="QR Code" width="200" />
+    </div>
+  </div>
+
+  <script>
+    async function gerarPix() {
+      const valor = document.getElementById("valor").value;
+      const res = await fetch("/api/servidor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ valor })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("pixCode").value = data.point_of_interaction.transaction_data.qr_code;
+        document.getElementById("pixResult").style.display = "block";
+        const qrBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
+        if (qrBase64) {
+          const img = document.getElementById("qrCodeImg");
+          img.src = "data:image/png;base64," + qrBase64;
+          img.style.display = "block";
+        }
+      } else {
+        alert(data.message || "Erro ao gerar Pix");
+      }
+    }
+
+    function copiarPix() {
+      const text = document.getElementById("pixCode");
+      text.select();
+      document.execCommand("copy");
+    }
+  </script>
+</body>
+</html>
