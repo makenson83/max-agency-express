@@ -1,21 +1,70 @@
 
-<button onclick="gerarPix()">Gerar Pix</button>
-<div id="resultado"></div>
-
-<script>
-  async function gerarPix() {
-    const valor = document.getElementById('valor').value;
-    const res = await fetch('/api/servidor.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ valor })
-    });
-    const data = await res.json();
-    const div = document.getElementById('resultado');
-    if (data.point_of_interaction) {
-      div.innerHTML = '<img src="' + data.point_of_interaction.transaction_data.qr_code_base64 + '" /><br><br>Copie e cole:<br>' + data.point_of_interaction.transaction_data.qr_code;
-    } else {
-      div.innerHTML = "<span style='color:red;'>Erro ao gerar Pix: " + (data.message || "Erro na requisição") + "</span>";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adicionar Saldo via Pix</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-  }
-</script>
+    .box {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      background: #ffc107;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #resultado {
+      margin-top: 20px;
+      color: red;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Adicionar Saldo via Pix</h2>
+    <input type="number" id="valor" placeholder="Digite o valor (mín. R$3)" min="3" max="3000" />
+    <button onclick="gerarPix()">Gerar Pix</button>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    async function gerarPix() {
+      const valor = document.getElementById('valor').value;
+      const res = await fetch('/api/servidor.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor })
+      });
+
+      const data = await res.json();
+      const div = document.getElementById('resultado');
+      if (data.point_of_interaction) {
+        div.innerHTML = '<img src="' + data.point_of_interaction.transaction_data.qr_code_base64 + '" /><br><br>Copie e cole:<br>' + data.point_of_interaction.transaction_data.qr_code;
+      } else {
+        div.innerHTML = "<span style='color:red;'>Erro ao gerar Pix: " + (data.message || "Erro na requisição") + "</span>";
+      }
+    }
+  </script>
+</body>
+</html>
