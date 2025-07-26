@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova Recarga</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9fafb;
+      padding: 20px;
+    }
+    h1 {
+      color: #1f2937;
+    }
+    label, select, input, button {
+      display: block;
+      margin: 15px 0;
+      font-size: 16px;
+    }
+    select, input {
+      padding: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #htg {
+      font-weight: bold;
+      color: green;
+    }
+    #erro-operadora {
+      color: red;
+      font-weight: bold;
+    }
+    #mensagem {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nova Recarga</h1>
+  <form onsubmit="return false;">
+    <label for="pais">País</label>
+    <select id="pais" onchange="atualizarDDD(); atualizarOperadora('recarga')">
+      <option value="HT">🇭🇹 Haiti (+509)</option>
+      <option value="DO">🇩🇴 República Dominicana (+1)</option>
+    </select>
+
+    <label for="ddd">DDD</label>
+    <select id="ddd">
+      <option value="509">509</option>
+    </select>
+
+    <label for="operadora">Operadora</label>
+    <select id="operadora"></select>
+
+    <label for="numero">Número de telefone</label>
+    <input type="tel" id="numero" placeholder="Ex: 37660000" oninput="converterValor(); detectarOperadoraPorNumero('recarga')" required>
+
+    <p id="erro-operadora"></p>
+<p id="operadora-detectada" style="color: green; font-weight: bold;"></p>
+
+    <label for="valor">Valor (R$)</label>
+    <input type="number" id="valor" min="3" max="1000" oninput="converterValor()" required>
+
+    <p>💱 Valor convertido: <span id="htg">0</span> HTG</p>
+
+    <p id="mensagem"></p>
+    <button type="button" onclick="mostrarConfirmacao('recarga')">Enviar Recarga</button>
+  </form>
+
+  <script>
+    function atualizarDDD() {
+      const pais = document.getElementById("pais").value;
+      const dddSelect = document.getElementById("ddd");
+      dddSelect.innerHTML = "";
+
+      if (pais === "HT") {
+        const option = document.createElement("option");
+        option.value = "509";
+        option.text = "509";
+        dddSelect.appendChild(option);
+      } else if (pais === "DO") {
+        ["809", "829", "849"].forEach(code => {
+          const option = document.createElement("option");
+          option.value = code;
+          option.text = code;
+          dddSelect.appendChild(option);
+        });
+      }
+    }
+
+    function atualizarOperadora(tipo) {
+      const pais = document.getElementById("pais").value;
+      const operadoraSelect = document.getElementById("operadora");
+      operadoraSelect.innerHTML = "";
+
+      let operadoras = [];
+
+      if (pais === "HT") {
+        operadoras = tipo === "recarga" ? ["DIGICEL", "NATCOM"] : ["MONCASH", "NATCASH"];
+      } else if (pais === "DO") {
+        operadoras = tipo === "recarga" ? ["CLARO", "ALTICE"] : ["BANRESERVAS", "VIMENCA"];
+      }
+
+      operadoras.forEach(op => {
+        const option = document.createElement("option");
+        option.value = op;
+        option.text = op;
+        operadoraSelect.appendChild(option);
+      });
+    }
+
+    function converterValor() {
+      const valor = document.getElementById("valor").value;
+      const htg = valor * 13;
+      document.getElementById("htg").innerText = isNaN(htg) ? 0 : htg.toFixed(2);
+    }
+
+    function detectarOperadoraPorNumero(tipo) {
+      const numero = document.getElementById("numero").value;
+      const operadoraSelect = document.getElementById("operadora");
+      const erro = document.getElementById("erro-operadora");
+
+      if (!numero || numero.length < 2) {
+        erro.innerText = "";
+        return;
+      }
+
+      const prefixo = numero.substring(0, 2);
+      let operadora = "";
+      const natcom = ["22", "35", "55", "32", "33", "40", "41", "42", "43"];
+      const digicel = ["31", "34", "36", "37", "38", "39", "46", "47", "48"];
+
+      if (tipo === "recarga") {
+        if (natcom.includes(prefixo)) {
+          operadora = "NATCOM"; erro.innerText = ""; document.getElementById('operadora-detectada').innerText = '✅ Operadora detectada: NATCOM';
+        } else if (digicel.includes(prefixo)) {
+          operadora = "DIGICEL"; erro.innerText = ""; document.getElementById('operadora-detectada').innerText = '✅ Operadora detectada: DIGICEL';
+        } else {
+          erro.innerText = "❌ Prefixo inválido para recarga."; document.getElementById("operadora-detectada").innerText = "";
+        }
+      } else {
+        if (natcom.includes(prefixo)) {
+          operadora = "NATCASH"; erro.innerText = ""; document.getElementById('operadora-detectada').innerText = '✅ Operadora detectada: NATCASH';
+        } else if (digicel.includes(prefixo)) {
+          operadora = "MONCASH"; erro.innerText = ""; document.getElementById('operadora-detectada').innerText = '✅ Operadora detectada: MONCASH';
+        } else {
+          erro.innerText = "❌ Prefixo inválido para transferência."; document.getElementById("operadora-detectada").innerText = "";
+        }
+      }
+
+      for (let i = 0; i < operadoraSelect.options.length; i++) {
+        if (operadoraSelect.options[i].value === operadora) {
+          operadoraSelect.selectedIndex = i;
+          break;
+        }
+      }
+    }
+
+    function mostrarConfirmacao(tipo) {
+      const numero = document.getElementById("numero").value;
+      const valor = document.getElementById("valor").value;
+      const pais = document.getElementById("pais").value;
+      const erro = document.getElementById("erro-operadora").innerText;
+
+      if (!numero || !valor || !pais || erro) {
+        alert("Corrija os dados antes de enviar.");
+        return;
+      }
+
+      const msg = tipo === 'recarga' 
+        ? "✅ Recarga enviada com sucesso!" 
+        : "✅ Transferência enviada com sucesso!";
+      document.getElementById("mensagem").innerText = msg;
+    }
+  </script>
+</body>
+</html>
