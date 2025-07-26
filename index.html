@@ -1,30 +1,33 @@
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
+  <title>Adicionar Saldo via Pix</title>
   <meta charset="UTF-8" />
-  <title>Login - Max Agency e Express</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f8f8f8; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
-    input, button { padding: 10px; margin: 10px 0; width: 100%; border-radius: 5px; }
-    button { background: #ffc107; border: none; font-weight: bold; cursor: pointer; }
-  </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>Max Agency e Express</h2>
-    <input type="text" id="usuario" placeholder="Usuário" />
-    <input type="password" id="senha" placeholder="Senha" />
-    <button onclick="login()">Entrar</button>
-  </div>
+  <h1>Adicionar Saldo via Pix</h1>
+  <input type="number" id="valor" placeholder="Valor mínimo R$3 e máximo R$3000" />
+  <button onclick="gerarPix()">Gerar Pix</button>
+  <div id="resultado"></div>
+
   <script>
-    function login() {
-      const u = document.getElementById('usuario').value;
-      const s = document.getElementById('senha').value;
-      if (u === "admin" && s === "1234") {
-        window.location.href = "home.html";
+    async function gerarPix() {
+      const valor = parseFloat(document.getElementById('valor').value);
+      const res = await fetch('http://localhost:3000/criar-pagamento', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ valor })
+      });
+
+      const dados = await res.json();
+      if (dados.qr_code) {
+        document.getElementById('resultado').innerHTML = `
+          <p><b>Código Pix:</b> ${dados.qr_code}</p>
+          <img src="data:image/png;base64,${dados.qr_code_base64}" width="200"/>
+        `;
       } else {
-        alert("Usuário ou senha incorretos.");
+        document.getElementById('resultado').innerText = 'Erro: ' + dados.erro;
       }
     }
   </script>
