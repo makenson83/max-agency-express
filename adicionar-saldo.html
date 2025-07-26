@@ -63,9 +63,9 @@
 
       if (data.point_of_interaction) {
         const pix = data.point_of_interaction.transaction_data;
-        const imagemQR = pix.qr_code_base64
-          ? '<img src="' + pix.qr_code_base64 + '" /><br><br>'
-          : (pix.ticket_url ? '<img src="' + pix.ticket_url + '" width="300"/><br><br>' : '');
+        const imagemQR = pix.qr_code
+          ? '<img src="https://chart.googleapis.com/chart?cht=qr&chl=' + encodeURIComponent(pix.qr_code) + '&chs=300x300" /><br><br>'
+          : '';
 
         div.innerHTML = imagemQR + "Copie e cole:<br><b>" + pix.qr_code + "</b>";
       } else {
