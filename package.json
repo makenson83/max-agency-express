@@ -1,11 +1,13 @@
 {
-  "name": "taxa-api",
+  "name": "pix-backend",
   "version": "1.0.0",
-  "main": "api/taxa.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node api/taxa.js"
+    "start": "node index.js"
   },
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "axios": "^1.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
   }
 }
