@@ -11,7 +11,8 @@ export default async function handler(req, res) {
         method: "POST",
         headers: {
           "Authorization": "Bearer APP_USR-7962833792436627-072523-8ffea118ee1504c171f5b0097b0c3e84-2495062492",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": Math.random().toString(36).substring(2) // chave única para evitar duplicidade
         },
         body: JSON.stringify({
           transaction_amount: Number(valor),
