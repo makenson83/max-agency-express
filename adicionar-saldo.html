@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adicionar Saldo via Pix</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+    input, button, textarea {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      background: #ffc107;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #resultado {
+      margin-top: 20px;
+      color: red;
+      word-break: break-word;
+    }
+    textarea {
+      resize: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Adicionar Saldo via Pix</h2>
+    <input type="number" id="valor" placeholder="Digite o valor (mín. R$3)" min="3" max="3000" />
+    <button onclick="gerarPix()">Gerar Pix</button>
+
+    <div id="resultado">
+      <p style="color:red;">Copie e cole no app do seu banco:</p>
+      <textarea id="pixcopiacola" readonly rows="4"></textarea>
+      <button onclick="copiarPix()">Copiar Código Pix</button>
+    </div>
+  </div>
+
+  <script>
+    async function gerarPix() {
+      const valor = document.getElementById('valor').value;
+      const res = await fetch('/api/servidor.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor })
+      });
+
+      const data = await res.json();
+      if (data.point_of_interaction) {
+        const pix = data.point_of_interaction.transaction_data.qr_code;
+        document.getElementById('pixcopiacola').value = pix;
+      } else {
+        document.getElementById('resultado').innerHTML =
+          "<span style='color:red;'>Erro ao gerar Pix: " + (data.message || "Erro na requisição") + "</span>";
+      }
+    }
+
+    function copiarPix() {
+      const texto = document.getElementById('pixcopiacola');
+      texto.select();
+      document.execCommand('copy');
+      alert("Código Pix copiado!");
+    }
+  </script>
+</body>
+</html>
