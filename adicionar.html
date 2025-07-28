@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adicionar Saldo</title>
+  <script type="module">
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    async function gerarPix() {
+      const valor = parseFloat(document.getElementById('valor').value);
+      if (isNaN(valor) || valor < 3 || valor > 3000) {
+        alert("Valor inválido. Mínimo R$3 e máximo R$3000.");
+        return;
+      }
+
+      const user = getAuth().currentUser;
+      if (!user) {
+        alert("Você precisa estar logado.");
+        return;
+      }
+
+      const response = await fetch('/api/gerar-pix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valor, email: user.email })
+      });
+
+      const data = await response.json();
+      document.getElementById("qrcode").src = `data:image/png;base64,${data.qr_code_base64}`;
+      document.getElementById("copiacola").value = data.qr_code;
+      document.getElementById("pix-area").style.display = "block";
+    }
+  </script>
+</head>
+<body>
+  <h2>Adicionar Saldo</h2>
+  <input type="number" id="valor" placeholder="Valor em R$ (mín. 3)" />
+  <button onclick="gerarPix()">Gerar Pix</button>
+
+  <div id="pix-area" style="display:none;">
+    <h3>QR Code Pix:</h3>
+    <img id="qrcode" src="" width="200" />
+    <h3>Copia e Cola:</h3>
+    <input type="text" id="copiacola" readonly style="width: 100%;" />
+    <button onclick="navigator.clipboard.writeText(document.getElementById('copiacola').value)">Copiar</button>
+  </div>
+</body>
+</html>
