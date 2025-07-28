@@ -1,18 +1,17 @@
-// firebase.js
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+// api/firebase.js
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
-// Configuração do Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBVarvB2l1nKwtfTwS3nCbV3HIdC7",
+  apiKey: "AIzaSyBtY8NZlN3KtcfW3vSsnCbvb3HdCvl_s4k",
   authDomain: "max-agency-express.firebaseapp.com",
   projectId: "max-agency-express",
   storageBucket: "max-agency-express.appspot.com",
-  messagingSenderId: "4907592552",
-  appId: "1:4907592552:web:5f563f7939b10860b0",
-  measurementId: "G-PBX13GCT9"
+  messagingSenderId: "538764334583",
+  appId: "1:405975052552:web:5f563f97930b86c08090ad"
 };
 
-// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const db = getFirestore(app);
+
+export { db };
