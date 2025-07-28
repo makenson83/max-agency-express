@@ -1,5 +1,5 @@
-// api/webhook.js (ou github-webhook.js, se preferir)
-import { db } from './firebase.js';
+// api/webhook.js
+import { db } from '../firebase.js';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { buffer } from 'micro';
 
@@ -16,47 +16,39 @@ export default async function handler(req, res) {
 
     const payment = body?.data?.id;
 
-    // Buscar detalhes do pagamento
     const response = await fetch(`https://api.mercadopago.com/v1/payments/${payment}`, {
-      method: "GET",
       headers: {
-        Authorization: "Bearer APP_USR-7962833792436627-072523-8ffea118ee1504c171f5b0097b0c3e84-2495062492",
+        Authorization: `Bearer APP_USR-7962833792436627-072523-8ffea118ee1504c171f5b0097b0c3e84-2495062492`,
       },
     });
 
     const data = await response.json();
 
-    if (data.status === "approved") {
-      const emailPagador = data.payer?.email || "";
-      const valorRecebido = data.transaction_amount || 0;
+    if (data.status === 'approved') {
+      const email = data.payer?.email;
+      const valor = data.transaction_amount;
 
-      if (!emailPagador) {
-        return res.status(400).json({ error: "Email do pagador não encontrado." });
-      }
-
-      // Referência do documento
-      const docRef = doc(db, "usuarios", emailPagador);
-      const docSnap = await getDoc(docRef);
+      const userRef = doc(db, 'usuarios', email);
+      const docSnap = await getDoc(userRef);
 
       if (docSnap.exists()) {
         const saldoAtual = docSnap.data().saldo || 0;
-        await updateDoc(docRef, {
-          saldo: saldoAtual + valorRecebido,
+        await updateDoc(userRef, {
+          saldo: saldoAtual + valor,
         });
       } else {
-        // Cria novo usuário se não existir
-        await setDoc(docRef, {
-          email: emailPagador,
-          saldo: valorRecebido,
+        await setDoc(userRef, {
+          email: email,
+          saldo: valor,
         });
       }
 
-      return res.status(200).json({ success: true });
-    } else {
-      return res.status(200).json({ status: data.status });
+      return res.status(200).json({ status: 'ok', message: 'Saldo atualizado com sucesso.' });
     }
+
+    return res.status(200).json({ status: 'ok', message: 'Pagamento ainda não aprovado.' });
   } catch (error) {
-    console.error("Erro no webhook:", error);
-    return res.status(500).json({ error: "Erro interno no servidor." });
+    console.error('Erro no webhook:', error);
+    return res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 }
