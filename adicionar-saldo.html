@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Adicionar Saldo via Pix</title>
   <style>
     body {
@@ -10,70 +11,79 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
     }
-
     .caixa {
       background: white;
-      padding: 40px;
+      padding: 24px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       text-align: center;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
     }
-
     input, button, textarea {
       padding: 10px;
       margin: 10px 0;
       width: 100%;
-      border-radius: 5px;
+      border-radius: 6px;
       box-sizing: border-box;
+      border: 1px solid #ddd;
+      font-size: 16px;
     }
-
     button {
       background: #ffc107;
       border: none;
       font-weight: bold;
       cursor: pointer;
     }
-
     #pixResult {
       display: none;
-      margin-top: 20px;
+      margin-top: 16px;
     }
-
     #qrCodeImg {
-      margin-top: 15px;
+      margin-top: 12px;
       display: none;
+    }
+    .tip {
+      font-size: 13px;
+      color: #555;
+      margin-top: 6px;
     }
   </style>
 </head>
 <body>
   <div class="caixa">
     <h2>Adicionar Saldo via Pix</h2>
-    <input type="number" id="valor" placeholder="Digite o valor (mínimo R$3)" min="3" />
+    <input type="number" id="valor" placeholder="Digite o valor (mínimo R$3, máximo R$3000)" min="3" step="0.01" />
     <button onclick="gerarPix()">Gerar Pix</button>
 
+    <div class="tip">Usaremos seu e-mail de login para identificar o depósito.</div>
+
     <div id="pixResult">
-      <p style="color: red;">Copie e cole no app do seu banco:</p>
+      <p style="color: #d32f2f; font-weight: bold;">Copie e cole no app do seu banco:</p>
       <textarea id="pixCode" rows="4" readonly></textarea>
       <button onclick="copiarPix()">Copiar Código Pix</button>
-      <img id="qrCodeImg" alt="Código QR" width="200" />
+      <img id="qrCodeImg" alt="QR Code Pix" width="220" />
     </div>
   </div>
 
+  <script src="gerar-pix.js"></script>
   <script>
-    async function gerarPix() {
-      const valor = document.getElementById("valor").value;
-
-      const res = await fetch("/api/servidor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ valor })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        document.getElementById("
+    function copiarPix() {
+      const code = document.getElementById('pixCode').value;
+      if (!code) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => alert('Código Pix copiado!'));
+      } else {
+        const ta = document.getElementById('pixCode');
+        ta.select();
+        document.execCommand('copy');
+        alert('Código Pix copiado!');
+      }
+    }
+  </script>
+</body>
+</html>
