@@ -1,129 +1,129 @@
-<!DOCTYPE html >
-< html  lang =" pt-br " >
-< cabeça >
-  < meta  charset =" UTF-8 " />
-  < title > Painel - Max Agency e Express </ title >
-  < estilo >
-    corpo {
-      família de fontes : Arial , sem serifa;
-      cor de fundo :  # f5f5f5 ;
-      margem :  0 ;
-      preenchimento :  0 ;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel - Max Agency e Express</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
     }
 
-    . contêiner {
-      largura máxima :  800 px ;
-      margem :  0 auto;
-      preenchimento :  30 px ;
-      cor de fundo : branco;
-      altura mínima :  100 vh ;
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: white;
+      min-height: 100vh;
     }
 
     h1 {
-      alinhamento de texto : centro;
-      margem inferior :  20 px ;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    . saldo {
-      cor de fundo :  # e3f2fd ;
-      preenchimento :  15 px ;
-      raio da borda :  8 px ;
-      tamanho da fonte :  18 px ;
-      alinhamento de texto : centro;
-      margem inferior :  30 px ;
+    .saldo {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 30px;
     }
 
-    . ações {
-      exibição : flexível;
-      flex-wrap : envolver;
-      justificar-conteúdo : centro;
-      lacuna :  15 px ;
-      margem inferior :  30 px ;
+    .acoes {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
     }
 
-    . botão de ações  {
-      preenchimento :  15 px  20 px ;
-      tamanho da fonte :  16 px ;
-      cor de fundo :  # ffc107 ;
-      borda : nenhuma;
-      raio da borda :  6 px ;
-      cursor : ponteiro;
-      largura mínima :  180 px ;
+    .acoes button {
+      padding: 15px 20px;
+      font-size: 16px;
+      background-color: #ffc107;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 180px;
     }
 
-    . histórico {
-      margem superior :  30 px ;
+    .historico {
+      margin-top: 30px;
     }
 
-    mesa {
-      largura :  100 % ;
-      colapso de fronteira : colapso;
-      margem superior :  10 px ;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
     }
 
-    º ,  td {
-      preenchimento :  10 px ;
-      borda inferior :  1 px sólido # ccc ;
-      alinhamento de texto : centro;
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      text-align: center;
     }
 
-    o {
-      cor de fundo :  # f1f1f1 ;
+    thead {
+      background-color: #f1f1f1;
     }
-  </ estilo >
-</head>​​
-< corpo >
-  < div  class =" contêiner " >
-    < h1 > Painel - Max Agency e Express </ h1 >
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Painel - Max Agency e Express</h1>
 
-    < div  class =" saldo " >
-      < forte > Saldo disponível: </ forte > R$ 250,00
-    </div>​​
+    <div class="saldo">
+      <strong>Saldo disponível:</strong> R$ 250,00
+    </div>
 
-    < div  class =" ações " >
-      < button  onclick =" window.location.href='nova-recarga.html' " > ➕ Nova Recarga </ button >
-      < button  onclick =" window.location.href='adicionar-saldo.html' " > 💰 Adicionar Saldo </ button >
-      < button  onclick =" window.location.href='nova-transferencia.html' " > 🔁 Nova Transferência </ button >
-      < button  onclick =" window.location.href='recibo.html' " > 📄 Ver Recibo </ button >
-      < button  onclick =" window.location.href='index.html' " > 🔙 Voltar ao Início </ button >
-    </div>​​
+    <div class="acoes">
+      <button onclick="window.location.href='nova-recarga.html'">➕ Nova Recarga</button>
+      <button onclick="window.location.href='adicionar-saldo.html'">💰 Adicionar Saldo</button>
+      <button onclick="window.location.href='nova-transferencia.html'">🔁 Nova Transferência</button>
+      <button onclick="window.location.href='recibo.html'">📄 Ver Recibo</button>
+      <button onclick="window.location.href='index.html'">🔙 Voltar ao Início</button>
+    </div>
 
-    < div  class =" histórico " >
-      < h2 > 📋 Últimas operações </ h2 >
-      < tabela >
-        < cabeça >
-          < tr >
-            < th > Dados </ th >
-            < th > Tipo </ th >
-            < th > Operadora </ th >
-            < th > Número </ th >
-            < th > Valor (R$) </ th >
-            < th > Valor (HTG) </ th >
-            < th > Estado </ th >
-          </ tr >
-        </ thead >
-        < corpo >
-          < tr >
-            < td > 06/06/2025 18:00 </ td >
-            < td > Recarregar </ td >
-            < td > Digicel </ td >
-            < td > +50912345678 </ td >
-            < td > R$ 30,00 </ td >
-            < td > 390 HTG </ td >
-            < td > Sucesso </ td >
-          </ tr >
-          < tr >
-            < td > 06/06/2025 17:45 </ td >
-            < td > Envio </ td >
-            < td > Natcom </ td >
-            < td > +50987654321 </ td >
-            < td > R$ 50,00 </ td >
-            < td > 650 HTG </ td >
-            < td > Sucesso </ td >
-          </ tr >
-        </ tbody >
-      </ tabela >
-    </div>​​
-  </div>​​
-</ corpo >
-</ html >
+    <div class="historico">
+      <h2>📋 Últimas operações</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Dados</th>
+            <th>Tipo</th>
+            <th>Operadora</th>
+            <th>Número</th>
+            <th>Valor (R$)</th>
+            <th>Valor (HTG)</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>06/06/2025 18:00</td>
+            <td>Recarregar</td>
+            <td>Digicel</td>
+            <td>+50912345678</td>
+            <td>R$ 30,00</td>
+            <td>390 HTG</td>
+            <td>Sucesso</td>
+          </tr>
+          <tr>
+            <td>06/06/2025 17:45</td>
+            <td>Envio</td>
+            <td>Natcom</td>
+            <td>+50987654321</td>
+            <td>R$ 50,00</td>
+            <td>650 HTG</td>
+            <td>Sucesso</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
