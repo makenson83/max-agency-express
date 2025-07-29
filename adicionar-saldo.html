@@ -1,70 +1,59 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Adicionar Saldo</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<!DOCTYPE html >
+< html  lang =" pt-BR " >
+< cabeça >
+  < meta  charset =" UTF-8 " />
+  < title > Adicionar Saldo via Pix </ title >
+  < estilo >
+    corpo { família-de-fontes : Arial , sem serifa; cor-de-fundo :  # f8f8f8 ; exibição : flex; justificar-conteúdo : centralizar; alinhar-itens : centralizar; altura :  100 vh ; }
+    . caixa { fundo : branco; preenchimento :  40 px ; raio da borda :  10 px ; sombra da caixa :  0  0  10 px  rgba ( 0 , 0 , 0 , 0,1 ); alinhamento do texto : centralizado; }
+    entrada ,  botão ,  área de texto { preenchimento :  10 px ; margem :  10 px  0 ; largura :  100 % ; raio da borda :  5 px ; }
+    botão { fundo :  # ffc107 ; borda : nenhuma; espessura da fonte : negrito; cursor : ponteiro; }
+    # pixResult { display : none; margem superior :  20 px ; }
+    # qrCodeImg { margem superior :  15 px ; exibição : nenhuma; }
+  </ estilo >
+</head>​​
+< corpo >
+  < div  class =" caixa " >
+    < h2 > Adicionar Saldo via Pix </ h2 >
+    < input  type =" número " id =" valor " placeholder =" Digite o valor (mínimo R$3) " min =" 3 " />
+    < button  onclick =" gerarPix() " > Gerar Pix </ button >
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBWZarv8E2lmNKv35tcfTw3SnCvb3HVdcI",
-      authDomain: "max-agency-express.firebaseapp.com",
-      projectId: "max-agency-express",
-      storageBucket: "max-agency-express.firebasestorage.app",
-      messagingSenderId: "409579502552",
-      appId: "1:409579502552:web:5f563f97390a860c8090ad",
-      measurementId: "G-PBX13GZC5T"
-    };
+    < div  id =" pixResult " >
+      < p  style =" color: red; " > Copie e cole no app do seu banco: </ p >
+      < textarea  id =" pixCode " linhas =" 4 " somente leitura > </ textarea >
+      < button  onclick =" copiarPix() " > Copiar Código Pix </ button >
+      < img  id =" qrCodeImg " alt =" Código QR " width =" 200 " />
+    </div>​​
+  </div>​​
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    let userEmail = "";
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userEmail = user.email;
-      } else {
-        window.location.href = "/login.html";
+  < script >
+     função  assíncrona gerarPix ( )  {
+      const  valor  =  document . getElementById ( "valor" ) . valor ;
+      const  res  =  await  fetch ( "/api/servidor" ,  {
+        método : "POST" ,
+        cabeçalhos : {  "Content-Type" : "application/json"  } ,
+        corpo : JSON . stringify ( { valor } )
+      } ) ;
+      const  dados  =  await  res . json ( ) ;
+      se  ( res . ok )  {
+        documento . getElementById ( "pixCode" ) . valor  =  dados . ponto_de_interação . dados_da_transação . código_qr ;
+        documento . getElementById ( "pixResult" ) . estilo . display  =  "bloco" ;
+        const  qrBase64  =  dados . ponto_de_interação . dados_da_transação . qr_code_base64 ;
+        se  ( qrBase64 )  {
+          const  img  =  documento . getElementById ( "qrCodeImg" ) ;
+          img . src  =  "dados:imagem/png;base64,"  +  qrBase64 ;
+          img . estilo . exibição  =  "bloco" ;
+        }
+      }  outro  {
+        alert ( data.message || " Erro ao gerar Pix" ) ;  
       }
-    });
+    }
 
-    window.gerarPix = async function () {
-      const valor = parseFloat(document.getElementById('valor').value);
-      if (isNaN(valor) || valor < 3 || valor > 3000) {
-        alert("Valor inválido. Mínimo R$3 e máximo R$3000.");
-        return;
-      }
-
-      const response = await fetch("/api/gerar-pix.js", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ valor, email: userEmail })
-      });
-
-      if (!response.ok) {
-        alert("Erro ao gerar Pix");
-        return;
-      }
-
-      const data = await response.json();
-      document.getElementById("qrcode").src = `data:image/png;base64,${data.qr_code_base64}`;
-      document.getElementById("copiacola").value = data.qr_code;
-      document.getElementById("pix-area").style.display = "block";
-    };
-  </script>
-</head>
-<body>
-  <h2>Adicionar Saldo</h2>
-  <input type="number" id="valor" placeholder="Valor em R$ (mín. 3)" />
-  <button onclick="gerarPix()">Gerar Pix</button>
-
-  <div id="pix-area" style="display:none;">
-    <h3>QR Code Pix:</h3>
-    <img id="qrcode" src="" width="200" />
-    <h3>Copia e Cola:</h3>
-    <input type="text" id="copiacola" readonly style="width: 100%;" />
-    <button onclick="navigator.clipboard.writeText(document.getElementById('copiacola').value)">Copiar</button>
-  </div>
-</body>
-</html>
+    função  copiarPix ( )  {
+      const  texto  =  documento . getElementById ( "pixCode" ) ;
+      texto . selecione ( ) ;
+      documento . execCommand ( "copiar" ) ;
+    }
+  </ script >
+</ corpo >
+</ html >
