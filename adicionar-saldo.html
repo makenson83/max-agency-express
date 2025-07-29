@@ -1,59 +1,79 @@
-<!DOCTYPE html >
-< html  lang =" pt-BR " >
-< cabeça >
-  < meta  charset =" UTF-8 " />
-  < title > Adicionar Saldo via Pix </ title >
-  < estilo >
-    corpo { família-de-fontes : Arial , sem serifa; cor-de-fundo :  # f8f8f8 ; exibição : flex; justificar-conteúdo : centralizar; alinhar-itens : centralizar; altura :  100 vh ; }
-    . caixa { fundo : branco; preenchimento :  40 px ; raio da borda :  10 px ; sombra da caixa :  0  0  10 px  rgba ( 0 , 0 , 0 , 0,1 ); alinhamento do texto : centralizado; }
-    entrada ,  botão ,  área de texto { preenchimento :  10 px ; margem :  10 px  0 ; largura :  100 % ; raio da borda :  5 px ; }
-    botão { fundo :  # ffc107 ; borda : nenhuma; espessura da fonte : negrito; cursor : ponteiro; }
-    # pixResult { display : none; margem superior :  20 px ; }
-    # qrCodeImg { margem superior :  15 px ; exibição : nenhuma; }
-  </ estilo >
-</head>​​
-< corpo >
-  < div  class =" caixa " >
-    < h2 > Adicionar Saldo via Pix </ h2 >
-    < input  type =" número " id =" valor " placeholder =" Digite o valor (mínimo R$3) " min =" 3 " />
-    < button  onclick =" gerarPix() " > Gerar Pix </ button >
-
-    < div  id =" pixResult " >
-      < p  style =" color: red; " > Copie e cole no app do seu banco: </ p >
-      < textarea  id =" pixCode " linhas =" 4 " somente leitura > </ textarea >
-      < button  onclick =" copiarPix() " > Copiar Código Pix </ button >
-      < img  id =" qrCodeImg " alt =" Código QR " width =" 200 " />
-    </div>​​
-  </div>​​
-
-  < script >
-     função  assíncrona gerarPix ( )  {
-      const  valor  =  document . getElementById ( "valor" ) . valor ;
-      const  res  =  await  fetch ( "/api/servidor" ,  {
-        método : "POST" ,
-        cabeçalhos : {  "Content-Type" : "application/json"  } ,
-        corpo : JSON . stringify ( { valor } )
-      } ) ;
-      const  dados  =  await  res . json ( ) ;
-      se  ( res . ok )  {
-        documento . getElementById ( "pixCode" ) . valor  =  dados . ponto_de_interação . dados_da_transação . código_qr ;
-        documento . getElementById ( "pixResult" ) . estilo . display  =  "bloco" ;
-        const  qrBase64  =  dados . ponto_de_interação . dados_da_transação . qr_code_base64 ;
-        se  ( qrBase64 )  {
-          const  img  =  documento . getElementById ( "qrCodeImg" ) ;
-          img . src  =  "dados:imagem/png;base64,"  +  qrBase64 ;
-          img . estilo . exibição  =  "bloco" ;
-        }
-      }  outro  {
-        alert ( data.message || " Erro ao gerar Pix" ) ;  
-      }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Adicionar Saldo via Pix</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
-    função  copiarPix ( )  {
-      const  texto  =  documento . getElementById ( "pixCode" ) ;
-      texto . selecione ( ) ;
-      documento . execCommand ( "copiar" ) ;
+    .caixa {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
     }
-  </ script >
-</ corpo >
-</ html >
+
+    input, button, textarea {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #ffc107;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #pixResult {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #qrCodeImg {
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="caixa">
+    <h2>Adicionar Saldo via Pix</h2>
+    <input type="number" id="valor" placeholder="Digite o valor (mínimo R$3)" min="3" />
+    <button onclick="gerarPix()">Gerar Pix</button>
+
+    <div id="pixResult">
+      <p style="color: red;">Copie e cole no app do seu banco:</p>
+      <textarea id="pixCode" rows="4" readonly></textarea>
+      <button onclick="copiarPix()">Copiar Código Pix</button>
+      <img id="qrCodeImg" alt="Código QR" width="200" />
+    </div>
+  </div>
+
+  <script>
+    async function gerarPix() {
+      const valor = document.getElementById("valor").value;
+
+      const res = await fetch("/api/servidor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ valor })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById("
