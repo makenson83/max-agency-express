@@ -2,10 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Max Agência e Express</title>
+  <title>Login - Max Agência e Express (Criação Automática)</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
@@ -26,17 +30,24 @@
       try {
         await signInWithEmailAndPassword(auth, email, senha);
         window.location.href = "/home.html";
-      } catch (error) {
-        alert("Usuário ou senha incorretos");
-        console.error("Erro ao logar:", error.message);
+      } catch (loginError) {
+        console.warn("Falha ao logar, tentando criar a conta...");
+        try {
+          await createUserWithEmailAndPassword(auth, email, senha);
+          alert("Usuário criado com sucesso. Redirecionando...");
+          window.location.href = "/home.html";
+        } catch (createError) {
+          alert("Erro ao criar usuário ou fazer login.");
+          console.error("Erro:", createError.message);
+        }
       }
     };
   </script>
 </head>
 <body>
   <h2>Max Agência e Express</h2>
-  <input id="email" type="email" placeholder="E-mail" />
-  <input id="senha" type="password" placeholder="Senha" />
+  <input id="email" type="email" placeholder="E-mail" value="admin@gmail.com" />
+  <input id="senha" type="password" placeholder="Senha" value="123456" />
   <button onclick="login()">Entrar</button>
 </body>
 </html>
