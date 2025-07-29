@@ -2,34 +2,29 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Adicionar Saldo (Login automático)</title>
+  <title>Adicionar Saldo</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      projectId: "SEU_PROJECT_ID",
-      storageBucket: "SEU_BUCKET.appspot.com",
-      messagingSenderId: "SEU_ID",
-      appId: "SEU_APP_ID"
+      apiKey: "AIzaSyBWZarv8E2lmNKv35tcfTw3SnCvb3HVdcI",
+      authDomain: "max-agency-express.firebaseapp.com",
+      projectId: "max-agency-express",
+      storageBucket: "max-agency-express.firebasestorage.app",
+      messagingSenderId: "409579502552",
+      appId: "1:409579502552:web:5f563f97390a860c8090ad",
+      measurementId: "G-PBX13GZC5T"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+
     let userEmail = "";
-
-    // Login automático com conta existente
-    signInWithEmailAndPassword(auth, "admin@gmail.com", "123456")
-      .then(() => console.log("Logado automaticamente"))
-      .catch((error) => console.error("Erro ao logar automaticamente", error));
-
     onAuthStateChanged(auth, (user) => {
       if (user) {
         userEmail = user.email;
       } else {
-        alert("Você precisa estar logado.");
         window.location.href = "/login.html";
       }
     });
@@ -60,7 +55,7 @@
   </script>
 </head>
 <body>
-  <h2>Adicionar Saldo (Login automático)</h2>
+  <h2>Adicionar Saldo</h2>
   <input type="number" id="valor" placeholder="Valor em R$ (mín. 3)" />
   <button onclick="gerarPix()">Gerar Pix</button>
 

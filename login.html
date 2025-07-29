@@ -32,7 +32,6 @@
         await signInWithEmailAndPassword(auth, email, senha);
         window.location.href = "/home.html";
       } catch (loginError) {
-        console.warn("Login falhou. Tentando criar o usuário...");
         try {
           await createUserWithEmailAndPassword(auth, email, senha);
           alert("Usuário criado com sucesso. Redirecionando...");
