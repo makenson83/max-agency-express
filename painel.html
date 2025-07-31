@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Max Agency Express - Painel</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; display: flex; height: 100vh; background-color: #f4f4f4; }
+    .sidebar {
+      width: 220px; background-color: #1a237e; color: white;
+      padding: 20px; display: flex; flex-direction: column; gap: 20px;
+    }
+    .sidebar h2 { font-size: 18px; margin-bottom: 20px; text-align: center; }
+    .sidebar button {
+      background: none; border: none; color: white; text-align: left;
+      padding: 10px; cursor: pointer; font-size: 15px; border-radius: 4px;
+    }
+    .sidebar button:hover { background-color: #3949ab; }
+    .content {
+      flex: 1; padding: 30px; position: relative;
+    }
+    .topbar {
+      background-color: #fff; padding: 15px 30px; border-bottom: 1px solid #ddd;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .saldo-box {
+      font-size: 18px; font-weight: bold; color: #2e7d32;
+    }
+    .email {
+      font-size: 14px; color: #555;
+    }
+    .logout {
+      color: #d32f2f; background: none; border: none;
+      font-size: 14px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Max Agency</h2>
+    <button onclick="location.href='painel.html'">🏠 Painel</button>
+    <button onclick="location.href='adicionar-saldo.html'">➕ Adicionar Saldo</button>
+    <button onclick="location.href='historico.html'">📜 Histórico</button>
+    <button onclick="logout()">🚪 Sair</button>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <div class="saldo-box">Saldo: R$ <span id="saldoValor">...</span></div>
+      <div class="email">
+        <span id="emailUser">usuário</span><br />
+        <button class="logout" onclick="logout()">Sair</button>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <h2>Bem-vindo(a) ao Painel!</h2>
+      <p>Aqui você pode acompanhar seu saldo e gerenciar suas recargas e transferências.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { firebaseConfig } from './firebase.js';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const email = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail");
+    if (!email) {
+      alert("Usuário não identificado.");
+      location.href = "index.html";
+    }
+
+    document.getElementById("emailUser").textContent = email;
+
+    const userRef = doc(db, "usuarios", email);
+    onSnapshot(userRef, (docSnap) => {
+      const data = docSnap.data();
+      const saldo = data?.saldo ?? 0;
+      document.getElementById("saldoValor").textContent = saldo.toFixed(2);
+    });
+
+    window.logout = function () {
+      localStorage.removeItem("userEmail");
+      sessionStorage.removeItem("userEmail");
+      location.href = "index.html";
+    };
+  </script>
+</body>
+</html>

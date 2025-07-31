@@ -1,191 +1,169 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nova Recarga</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f9fafb;
+      background-color: #f4f4f4;
+      margin: 0;
       padding: 20px;
     }
-    h1 {
-      color: #1f2937;
-    }
-    label, select, input, button {
-      display: block;
-      margin: 15px 0;
-      font-size: 16px;
-    }
-    select, input {
-      padding: 8px;
-      width: 100%;
+    .form-box {
       max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     button {
-      padding: 10px 20px;
-      background-color: #2563eb;
+      background-color: #1a237e;
       color: white;
-      border: none;
-      border-radius: 6px;
+      font-weight: bold;
       cursor: pointer;
     }
-    #htg {
-      font-weight: bold;
-      color: green;
-    }
-    #erro-operadora {
-      color: red;
-      font-weight: bold;
-    }
-    #mensagem {
-      color: green;
+    .mensagem {
+      text-align: center;
+      margin-top: 15px;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>Nova Recarga</h1>
-  <form onsubmit="return false;">
-    <label for="pais">País</label>
-    <select id="pais" onchange="atualizarDDD(); atualizarOperadora('recarga')">
-      <option value="HT">🇭🇹 Haiti (+509)</option>
-      <option value="DO">🇩🇴 República Dominicana (+1)</option>
+  <div class="form-box">
+    <h2>➕ Nova Recarga</h2>
+    <select id="pais" onchange="atualizarPrefixo()">
+      <option value="Haiti">🇭🇹 Haiti</option>
+      <option value="República Dominicana">🇩🇴 República Dominicana</option>
     </select>
-
-    <label for="ddd">DDD</label>
-    <select id="ddd">
-      <option value="509">509</option>
+    <select id="operadora">
+      <option value="Digicel">Digicel</option>
+      <option value="Natcom">Natcom</option>
     </select>
+    <input type="text" id="numero" placeholder="Número do telefone (sem prefixo)" />
+    <input type="number" id="valor" placeholder="Valor em R$ (mínimo 3)" min="3" />
+    <button onclick="enviarRecarga()">Enviar Recarga</button>
+    <div class="mensagem" id="mensagem"></div>
+  </div>
 
-    <label for="operadora">Operadora</label>
-    <select id="operadora"></select>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { firebaseConfig } from './firebase.js';
 
-    <label for="numero">Número de telefone</label>
-    <input type="tel" id="numero" placeholder="Ex: 37660000" oninput="converterValor(); detectarOperadoraPorNumero('recarga')" required>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    <p id="erro-operadora"></p>
-    <p id="operadora-detectada" style="color: green; font-weight: bold;"></p>
+    let prefixoAtual = "+509"; // padrão Haiti
 
-    <label for="valor">Valor (R$)</label>
-    <input type="number" id="valor" min="3" max="1000" oninput="converterValor()" required>
-
-    <p>💱 Valor convertido: <span id="htg">0</span> HTG</p>
-
-    <p id="mensagem"></p>
-    <button type="button" onclick="mostrarConfirmacao('recarga')">Enviar Recarga</button>
-  </form>
-
-  <script>
-    function atualizarDDD() {
+    window.atualizarPrefixo = function () {
       const pais = document.getElementById("pais").value;
-      const dddSelect = document.getElementById("ddd");
-      dddSelect.innerHTML = "";
+      prefixoAtual = pais === "Haiti" ? "+509" : "+1";
+    };
 
-      if (pais === "HT") {
-        const option = document.createElement("option");
-        option.value = "509";
-        option.text = "509";
-        dddSelect.appendChild(option);
-      } else if (pais === "DO") {
-        ["809", "829", "849"].forEach(code => {
-          const option = document.createElement("option");
-          option.value = code;
-          option.text = code;
-          dddSelect.appendChild(option);
-        });
-      }
-    }
-
-    function atualizarOperadora(tipo) {
+    window.enviarRecarga = async function () {
       const pais = document.getElementById("pais").value;
-      const operadoraSelect = document.getElementById("operadora");
-      operadoraSelect.innerHTML = "";
+      const operadora = document.getElementById("operadora").value;
+      const numero = document.getElementById("numero").value.trim();
+      const valor = parseFloat(document.getElementById("valor").value);
+      const msg = document.getElementById("mensagem");
+      const userId = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail");
 
-      let operadoras = [];
+      msg.textContent = "";
+      msg.style.color = "black";
 
-      if (pais === "HT") {
-        operadoras = tipo === "recarga" ? ["DIGICEL", "NATCOM"] : ["MONCASH", "NATCASH"];
-      } else if (pais === "DO") {
-        operadoras = tipo === "recarga" ? ["CLARO", "ALTICE"] : ["BANRESERVAS", "VIMENCA"];
+      if (!userId || !pais || !operadora || !numero || isNaN(valor) || valor < 3) {
+        msg.textContent = "Preencha todos os campos corretamente.";
+        msg.style.color = "red";
+        return;
       }
 
-      operadoras.forEach(op => {
-        const option = document.createElement("option");
-        option.value = op;
-        option.text = op;
-        operadoraSelect.appendChild(option);
+      
+      // Detecção automática da operadora (apenas para Haiti)
+      if (pais === "Haiti") {
+        const prefixosNatcom = ['22', '32', '33', '35', '40', '41', '42', '43', '55'];
+        const prefixosDigicel = ['31', '34', '36', '37', '38', '39', '44', '46', '47', '48'];
+        const doisDigitos = numero.substring(0, 2);
+
+        if (prefixosNatcom.includes(doisDigitos)) {
+          document.getElementById("operadora").value = "Natcom";
+        } else if (prefixosDigicel.includes(doisDigitos)) {
+          document.getElementById("operadora").value = "Digicel";
+        }
+      }
+
+      
+      // Detecção automática da operadora (República Dominicana)
+      if (pais === "República Dominicana") {
+        const prefixo = numero.substring(0, 3);
+        const claro = ['221', '222', '223', '224', '225', '226', '227', '228', '229'];
+        const altice = ['540', '541', '542', '543', '344', '345'];
+        const viva = ['200', '201', '202'];
+
+        if (claro.includes(prefixo)) {
+          document.getElementById("operadora").value = "Claro";
+        } else if (altice.includes(prefixo)) {
+          document.getElementById("operadora").value = "Altice";
+        } else if (viva.includes(prefixo)) {
+          document.getElementById("operadora").value = "Viva";
+        }
+      }
+
+      // Validação por país
+      if (pais === "Haiti" && numero.length !== 8) {
+        msg.textContent = "Número inválido para o Haiti. Deve conter 8 dígitos.";
+        msg.style.color = "red";
+        return;
+      }
+      if (pais === "República Dominicana" && numero.length !== 10) {
+        msg.textContent = "Número inválido para a República Dominicana. Deve conter 10 dígitos.";
+        msg.style.color = "red";
+        return;
+      }
+
+      const numeroCompleto = prefixoAtual + numero;
+
+      msg.textContent = "Enviando recarga...";
+
+      const res = await fetch("/api/recarga", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": userId
+        },
+        body: JSON.stringify({ pais, operadora, numero: numeroCompleto, valor })
       });
-    }
 
-    function converterValor() {
-      const valor = document.getElementById("valor").value;
-      const htg = valor * 13;
-      document.getElementById("htg").innerText = isNaN(htg) ? 0 : htg.toFixed(2);
-    }
+      const data = await res.json();
 
-    function detectarOperadoraPorNumero(tipo) {
-      const numero = document.getElementById("numero").value;
-      const pais = document.getElementById("pais").value;
-      const operadoraSelect = document.getElementById("operadora");
-      const erro = document.getElementById("erro-operadora");
-      const info = document.getElementById("operadora-detectada");
-
-      if (!numero || numero.length < 2 || pais !== "HT") {
-        erro.innerText = "";
-        info.innerText = "";
-        return;
-      }
-
-      const prefixo = numero.substring(0, 2);
-      let operadora = "";
-      const natcom = ["22", "35", "55", "32", "33", "40", "41", "42", "43"];
-      const digicel = ["31", "34","44", "36", "37", "38", "39", "46", "47", "48"];
-
-      if (tipo === "recarga") {
-        if (natcom.includes(prefixo)) {
-          operadora = "NATCOM"; erro.innerText = ""; info.innerText = "✅ Operadora detectada: NATCOM";
-        } else if (digicel.includes(prefixo)) {
-          operadora = "DIGICEL"; erro.innerText = ""; info.innerText = "✅ Operadora detectada: DIGICEL";
-        } else {
-          erro.innerText = "❌ Prefixo inválido para recarga."; info.innerText = "";
-        }
+      if (res.ok) {
+        msg.textContent = "✅ Recarga enviada com sucesso!";
+        msg.style.color = "green";
       } else {
-        if (natcom.includes(prefixo)) {
-          operadora = "NATCASH"; erro.innerText = ""; info.innerText = "✅ Operadora detectada: NATCASH";
-        } else if (digicel.includes(prefixo)) {
-          operadora = "MONCASH"; erro.innerText = ""; info.innerText = "✅ Operadora detectada: MONCASH";
-        } else {
-          erro.innerText = "❌ Prefixo inválido para transferência."; info.innerText = "";
-        }
+        msg.textContent = "❌ Erro: " + (data?.mensagem || "Falha ao enviar");
+        msg.style.color = "red";
       }
+    };
 
-      for (let i = 0; i < operadoraSelect.options.length; i++) {
-        if (operadoraSelect.options[i].value === operadora) {
-          operadoraSelect.selectedIndex = i;
-          break;
-        }
-      }
-    }
-
-    function mostrarConfirmacao(tipo) {
-      const numero = document.getElementById("numero").value;
-      const valor = document.getElementById("valor").value;
-      const pais = document.getElementById("pais").value;
-      const erro = document.getElementById("erro-operadora").innerText;
-
-      if (!numero || !valor || !pais || erro) {
-        alert("Corrija os dados antes de enviar.");
-        return;
-      }
-
-      const msg = tipo === 'recarga' 
-        ? "✅ Recarga enviada com sucesso!" 
-        : "✅ Transferência enviada com sucesso!";
-      document.getElementById("mensagem").innerText = msg;
-    }
+    // Inicializar prefixo padrão ao carregar
+    atualizarPrefixo();
   </script>
 </body>
 </html>

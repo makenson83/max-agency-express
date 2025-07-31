@@ -1,1 +1,122 @@
-<!-- Página de histórico de transações -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Histórico de Transações</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #1a237e;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .voltar {
+      margin: 20px auto;
+      display: block;
+      background-color: #1a237e;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>📋 Histórico de Transações</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Operadora</th>
+        <th>Número</th>
+        <th>Valor (R$)</th>
+        <th>Valor (HTG)</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaHistorico">
+      <tr><td colspan="7">Carregando...</td></tr>
+    </tbody>
+  </table>
+
+  <button class="voltar" onclick="history.back()">⬅ Voltar</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { firebaseConfig } from './firebase.js';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const email = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail");
+    if (!email) {
+      alert("Usuário não identificado.");
+      location.href = "index.html";
+    }
+
+    const tabela = document.getElementById("tabelaHistorico");
+    tabela.innerHTML = "<tr><td colspan='7'>Buscando dados...</td></tr>";
+
+    const q = query(
+      collection(db, "transacoes"),
+      where("userId", "==", email),
+      orderBy("data", "desc")
+    );
+
+    getDocs(q).then(snapshot => {
+      if (snapshot.empty) {
+        tabela.innerHTML = "<tr><td colspan='7'>Nenhuma transação encontrada.</td></tr>";
+        return;
+      }
+
+      let html = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const data = new Date(d.data).toLocaleString("pt-BR");
+        html += `
+          <tr>
+            <td>${data}</td>
+            <td>${d.tipo || "-"}</td>
+            <td>${d.operadora || "-"}</td>
+            <td>${d.numero || "-"}</td>
+            <td>R$ ${Number(d.valorBRL || 0).toFixed(2)}</td>
+            <td>${d.valorHTG ? d.valorHTG.toFixed(2) : "-"}</td>
+            <td>${d.status || "-"}</td>
+          </tr>`;
+      });
+
+      tabela.innerHTML = html;
+    }).catch(err => {
+      console.error("Erro ao buscar histórico:", err);
+      tabela.innerHTML = "<tr><td colspan='7'>Erro ao buscar dados.</td></tr>";
+    });
+  </script>
+</body>
+</html>
