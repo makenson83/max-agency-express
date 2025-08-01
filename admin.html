@@ -3,51 +3,148 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login Admin</title>
+  <title>Painel Admin</title>
   <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore-compat.js"></script>
   <style>
-    body { font-family: Arial; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px #ccc; width: 300px; text-align: center; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #1a237e; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #1a237e;
+      color: white;
+    }
+    .admin-box {
+      max-width: 800px;
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Login Admin</h2>
-    <input type="email" id="email" placeholder="E-mail" />
-    <input type="password" id="senha" placeholder="Senha" />
-    <button onclick="loginAdmin()">Entrar</button>
-    <p id="erro" style="color: red;"></p>
+  <div class="admin-box">
+    <h2>Painel Admin - Max Agency</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Saldo (R$)</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-usuarios">
+        <tr><td colspan="2">Carregando usuários...</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
     import { firebaseConfig } from './firebase.js';
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    window.loginAdmin = async function () {
-      const email = document.getElementById("email").value;
-      const senha = document.getElementById("senha").value;
-      const erro = document.getElementById("erro");
+    const userLogado = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail");
+    if (userLogado !== "maxagency83@gmail.com") {
+      alert("Acesso restrito ao administrador.");
+      window.location.href = "home.html";
+    }
 
-      if (email !== "maxagency83@gmail.com") {
-        erro.innerText = "Acesso apenas para o administrador.";
+    async function carregarUsuarios() {
+      const tabela = document.getElementById("tabela-usuarios");
+      tabela.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      querySnapshot.forEach(doc => {
+        const dado = doc.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${dado.email}</td><td>R$ ${dado.saldo?.toFixed(2) || "0.00"}</td>`;
+        tabela.appendChild(tr);
+      });
+    }
+
+    carregarUsuarios();
+  </script>
+</body>
+</html>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+    import { firebaseConfig } from './firebase.js';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const userLogado = localStorage.getItem("userEmail") || sessionStorage.getItem("userEmail");
+    if (userLogado !== "maxagency83@gmail.com") {
+      alert("Acesso restrito ao administrador.");
+      window.location.href = "home.html";
+    }
+
+    async function carregarUsuarios() {
+      const tabela = document.getElementById("tabela-usuarios");
+      tabela.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      querySnapshot.forEach(doc => {
+        const dado = doc.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${dado.email}</td><td>R$ ${dado.saldo?.toFixed(2) || "0.00"}</td>
+          <td><span class="btn-ver" onclick="verHistorico('${dado.email}')">🔍 Ver histórico</span></td>`;
+        tabela.appendChild(tr);
+      });
+    }
+
+    window.verHistorico = async function(email) {
+      const tabela = document.getElementById("tabela-historico");
+      tabela.innerHTML = "<tr><td colspan='7'>Carregando histórico...</td></tr>";
+
+      const q = query(collection(db, "transacoes"), where("usuario", "==", email));
+      const snap = await getDocs(q);
+
+      if (snap.empty) {
+        tabela.innerHTML = "<tr><td colspan='7'>Nenhuma transação encontrada.</td></tr>";
         return;
       }
 
-      try {
-        await signInWithEmailAndPassword(auth, email, senha);
-        localStorage.setItem("userEmail", email);
-        window.location.href = "admin.html";
-      } catch (e) {
-        erro.innerText = "Login inválido.";
-      }
-    };
+      let linhas = "";
+      snap.forEach(doc => {
+        const t = doc.data();
+        const data = new Date(t.data?.seconds * 1000).toLocaleString("pt-BR");
+        linhas += `<tr>
+          <td>${data}</td>
+          <td>${t.tipo}</td>
+          <td>${t.operadora}</td>
+          <td>${t.numero}</td>
+          <td>R$ ${t.valorBRL?.toFixed(2) || "0.00"}</td>
+          <td>${t.valorHTG || "-"}</td>
+          <td>${t.status || "Sucesso"}</td>
+        </tr>`;
+      });
+
+      tabela.innerHTML = linhas;
+    }
+
+    carregarUsuarios();
   </script>
 </body>
 </html>

@@ -1,57 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <title>Login - Max Agência e Express</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f8f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      width: 300px;
-    }
-    input, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      border-radius: 5px;
-    }
-    button {
-      background: #ffc107;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <div class="login-box">
-    <h2>Max Agência e Express</h2>
-    <input type="text" id="usuario" placeholder="Usuário" />
-    <input type="password" id="senha" placeholder="Senha" />
-    <button onclick="login()">Entrar</button>
-  </div>
-
-  <script>
-    function login() {
-      const u = document.getElementById('usuario').value;
-      const s = document.getElementById('senha').value;
-      if (u === "admin" && s === "1234") {
-        window.location.href = "home.html";
-      } else {
-        alert("Usuário ou senha incorreta.");
-      }
-    }
-  </script>
-</body>
+  <head>
+    <meta http-equiv="refresh" content="0; URL='home.html'" />
+    <title>Redirecionando...</title>
+  </head>
+  <body>
+    Redirecionando para o painel...
+  </body>
 </html>
